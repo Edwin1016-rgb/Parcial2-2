@@ -33,7 +33,7 @@ async def send_message(request: Request, creds: HTTPBasicCredentials = Depends(v
     return {"status": "message sent"}
 
 
-@app.get("/health")
+@app.get("/api/health")
 async def healthcheck():
     try:
         connection = await aio_pika.connect_robust(RABBITMQ_URL)
