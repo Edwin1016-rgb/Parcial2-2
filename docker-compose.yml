@@ -1,0 +1,67 @@
+services:
+  api:
+    build:
+      context: ./api
+    container_name: api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=web"
+    expose:
+      - 8000
+    command: uvicorn main:app --host 0.0.0.0 --port 8000
+    depends_on:
+      - rabbitmq
+    networks:
+      - micro_net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      retries: 3
+      start_period: 10s
+      timeout: 5s
+
+  worker:
+    build:
+      context: ./worker
+    container_name: worker
+    depends_on:
+      - rabbitmq
+    volumes:
+      - data_vol:/data
+    networks:
+      - micro_net
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"     
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rabbitmq.rule=PathPrefix(`/monitor`)"
+      - "traefik.http.routers.rabbitmq.entrypoints=web"
+    networks:
+      - micro_net
+
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--providers.file.filename=/etc/traefik/traefik.yml"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:8080"
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - micro_net
+
+networks:
+  micro_net:
+
+volumes:
+  data_vol:
