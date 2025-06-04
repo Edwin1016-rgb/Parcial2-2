@@ -11,4 +11,4 @@ evidencia del funcionamiento
 mensaje enviado y corriendo en cola
 ![Image](https://github.com/user-attachments/assets/46225824-e5fb-4f98-b59d-5c1131ee1d61)
 estado del contenedor
-![Image](https://github.com/user-attachments/assets/46225824-e5fb-4f98-b59d-5c1131ee1d61)
+![Image](https://github.com/user-attachments/assets/1726d862-9a27-4573-aec0-3f66d1a049fa)
